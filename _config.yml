@@ -1,0 +1,25 @@
+title: "Receitas do Gui"
+tagline: "Receitas simples, afetivas e caseiras — direto da horta para a cozinha."
+description: "Receitas simples, caseiras e afetivas, sem enrolação e focadas na prática da cozinha."
+url: "https://receitas.guineves.com.br"
+baseurl: ""
+author: "Guilherme Neves"
+email: "gmneves@gmail.com"
+lang: "pt-BR"
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+permalink: /:slug/
+future: true
+collections:
+  posts:
+    output: true
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+exclude:
+  - commit.sh
+  - publish.sh
+  - nova-receita.sh
+  - README.md

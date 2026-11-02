@@ -1,0 +1,197 @@
+---
+layout: default
+---
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-dialogue">
+      <img src="{{ '/assets/gui-portrait.png' | relative_url }}" alt="Gui no estilo Stardew Valley" class="hero-portrait">
+      <div class="hero-dialogue-text">
+        <h2>🍲 O que vamos cozinhar hoje?</h2>
+        <p>Receitas caseiras, sem complicação e cheias de afeto — anote os ingredientes e bom apetite!</p>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="recipe-search" placeholder="Buscar por receita, ingrediente ou tag..." autocomplete="off">
+    </div>
+
+    <div class="tags-bar" id="tag-filters">
+      <button class="tag-btn active" data-tag="all">🌾 Todas</button>
+      {% assign all_tags = site.posts | map: 'tags' | flatten | uniq | sort %}
+      {% for tag in all_tags %}
+        {% assign tag_clean = tag | downcase | strip %}
+        {% if tag_clean != "" %}
+          <button class="tag-btn" data-tag="{{ tag_clean }}">#{{ tag }}</button>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="recipes-list" id="recipes-container">
+    {% for post in site.posts %}
+      <article class="recipe-card" data-tags="{% for t in post.tags %}{{ t | downcase | strip }} {% endfor %}" data-title="{{ post.title | downcase }}" data-content="{{ post.content | strip_html | downcase }}">
+        <div class="recipe-header">
+          <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+        </div>
+
+        <div class="meta-pills">
+          <span class="pill prep">⏱️ {{ post.prep_time | default: "15 min" }}</span>
+          <span class="pill cook">🍳 {{ post.cook_time | default: "30 min" }}</span>
+          <span class="pill">🍽️ {{ post.servings | default: "4 porções" }}</span>
+          {% if post.difficulty %}
+            <span class="pill quality">⭐ {{ post.difficulty }}</span>
+          {% endif %}
+        </div>
+
+        <p class="recipe-excerpt">{{ post.excerpt | strip_html | truncate: 150 }}</p>
+
+        <div class="recipe-footer">
+          <div class="recipe-tags">
+            {% for tag in post.tags %}
+              <span class="tag-pill" data-tag="{{ tag | downcase | strip }}" style="cursor: pointer;" title="Filtrar por #{{ tag }}">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+          <a class="view-link" href="{{ post.url | relative_url }}">ver receita →</a>
+        </div>
+      </article>
+    {% else %}
+      <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+        <p>Ainda não há receitas publicadas no caderno.</p>
+        <p>Use <code>./nova-receita.sh</code> para criar a primeira receita em <code>_drafts/</code>!</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div id="no-results" style="display: none; text-align: center; padding: 40px; color: var(--text-muted);">
+    <p>Nenhuma receita encontrada com esse filtro 🧺</p>
+  </div>
+</div>
+
+<script>
+  const searchInput = document.getElementById('recipe-search');
+  const cards = document.querySelectorAll('.recipe-card');
+  const noResults = document.getElementById('no-results');
+  const tagsBar = document.getElementById('tag-filters');
+
+  let activeTag = 'all';
+
+  // 1. Organização inteligente das tags (ordena por popularidade e colapsa exibindo as 10 principais)
+  const tagButtons = Array.from(tagsBar.querySelectorAll('.tag-btn:not([data-tag="all"])'));
+  const tagCounts = {};
+
+  cards.forEach(card => {
+    const rawTags = (card.getAttribute('data-tags') || '').toLowerCase().split(/\s+/).filter(Boolean);
+    rawTags.forEach(t => {
+      tagCounts[t] = (tagCounts[t] || 0) + 1;
+    });
+  });
+
+  // Ordena os botões de tags: maior frequência primeiro, alfabético como desempate
+  tagButtons.sort((a, b) => {
+    const tagA = a.getAttribute('data-tag');
+    const tagB = b.getAttribute('data-tag');
+    const countA = tagCounts[tagA] || 0;
+    const countB = tagCounts[tagB] || 0;
+    if (countB !== countA) return countB - countA;
+    return tagA.localeCompare(tagB);
+  });
+
+  // Reanexa os botões ordenados e esconde os excedentes após o limite de 10
+  const LIMIT = 10;
+  let hasExtra = false;
+  let extraCount = 0;
+
+  tagButtons.forEach((btn, index) => {
+    tagsBar.appendChild(btn);
+    if (index >= LIMIT) {
+      btn.classList.add('tag-extra');
+      hasExtra = true;
+      extraCount++;
+    }
+  });
+
+  // Botão interativo de expandir/recolher tags
+  let toggleBtn = null;
+  if (hasExtra) {
+    toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'tag-btn tag-toggle';
+    toggleBtn.innerHTML = `+ mais ${extraCount} tags ▾`;
+    tagsBar.appendChild(toggleBtn);
+
+    toggleBtn.addEventListener('click', () => {
+      const isExpanded = tagsBar.classList.toggle('expanded');
+      toggleBtn.innerHTML = isExpanded ? '▴ recolher tags' : `+ mais ${extraCount} tags ▾`;
+    });
+  }
+
+  function filterRecipes() {
+    const query = (searchInput.value || '').trim().toLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const title = card.getAttribute('data-title') || '';
+      const content = card.getAttribute('data-content') || '';
+      const rawTags = card.getAttribute('data-tags') || '';
+      const cardTags = rawTags.toLowerCase().split(/\s+/).filter(Boolean);
+
+      const matchesQuery = !query || title.includes(query) || content.includes(query) || rawTags.includes(query);
+      const matchesTag = activeTag === 'all' || cardTags.includes(activeTag);
+
+      if (matchesQuery && matchesTag) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (noResults) {
+      noResults.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
+    }
+  }
+
+  function setActiveTag(tag) {
+    activeTag = tag;
+
+    // Se a tag selecionada estiver no grupo colapsado, expande a barra automaticamente
+    const selectedBtn = tagsBar.querySelector(`.tag-btn[data-tag="${tag}"]`);
+    if (selectedBtn && selectedBtn.classList.contains('tag-extra') && !tagsBar.classList.contains('expanded')) {
+      tagsBar.classList.add('expanded');
+      if (toggleBtn) toggleBtn.innerHTML = '▴ recolher tags';
+    }
+
+    tagsBar.querySelectorAll('.tag-btn:not(.tag-toggle)').forEach(b => {
+      if (b.getAttribute('data-tag') === tag) {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+    filterRecipes();
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', filterRecipes);
+  }
+
+  tagsBar.querySelectorAll('.tag-btn:not(.tag-toggle)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setActiveTag(btn.getAttribute('data-tag'));
+    });
+  });
+
+  document.querySelectorAll('.tag-pill').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const tag = pill.getAttribute('data-tag');
+      setActiveTag(tag);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>

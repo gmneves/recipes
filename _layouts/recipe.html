@@ -1,0 +1,70 @@
+---
+layout: default
+---
+
+<article class="recipe-single">
+  <div class="container">
+
+    <div class="back-nav">
+      <a href="{{ '/' | relative_url }}">← voltar para todas as receitas</a>
+    </div>
+
+    <div class="recipe-hero-box">
+      <h1 class="recipe-single-title">{{ page.title }}</h1>
+      {% if page.excerpt %}
+        <p class="recipe-single-excerpt">{{ page.excerpt | strip_html }}</p>
+      {% endif %}
+
+      <div class="recipe-info-grid">
+        <div class="info-item">
+          <span class="info-label">⏱️ Preparo</span>
+          <span class="info-val">{{ page.prep_time | default: "15 min" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">🍳 Cozimento</span>
+          <span class="info-val">{{ page.cook_time | default: "30 min" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">🍽️ Rendimento</span>
+          <span class="info-val">{{ page.servings | default: "4 porções" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">⭐ Qualidade</span>
+          <span class="info-val">{{ page.difficulty | default: "Fácil" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="recipe-content">
+      {{ content }}
+    </div>
+
+    <div class="recipe-actions">
+      <button class="action-btn" type="button" onclick="window.print()">
+        🖨️ Imprimir Receita
+      </button>
+
+      <button id="copy-recipe-link" class="action-btn" type="button">
+        🔗 Copiar Link
+      </button>
+
+      <a class="action-btn" href="https://api.whatsapp.com/send?text={{ page.title | append: ' — Veja esta receita: ' | append: site.url | append: page.url | url_encode }}" target="_blank" rel="noopener">
+        💬 WhatsApp
+      </a>
+    </div>
+
+  </div>
+</article>
+
+<script>
+  const copyBtn = document.getElementById('copy-recipe-link');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const origText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '✅ Link copiado!';
+        setTimeout(() => { copyBtn.innerHTML = origText; }, 2000);
+      });
+    });
+  }
+</script>

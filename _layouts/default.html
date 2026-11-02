@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | absolute_url }}">
+  <link rel="icon" type="image/x-icon" href="{{ '/assets/favicon.ico' | relative_url }}">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:title" content="{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}">
+  <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+  <meta property="og:type" content="{% if page.layout == 'recipe' %}article{% else %}website{% endif %}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ '/assets/og-image.png' | absolute_url }}">
+  <meta property="og:image:secure_url" content="{{ '/assets/og-image.png' | absolute_url }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ site.title }}">
+  <meta property="og:locale" content="pt_BR">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}">
+  <meta name="twitter:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+  <meta name="twitter:image" content="{{ '/assets/og-image.png' | absolute_url }}">
+
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+
+  <!-- Previne flash visual do tema (FOUC) lendo o cookie unificado de .guineves.com.br -->
+  <script>
+    (function() {
+      function getTheme() {
+        const match = document.cookie.match(/(^|;)\s*site_theme=([^;]+)/);
+        if (match) return match[2];
+        try { return localStorage.getItem('theme'); } catch(e) {}
+        return null;
+      }
+      if (getTheme() === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="{{ '/' | relative_url }}" class="brand">
+        <img src="{{ '/assets/gui-portrait.png' | relative_url }}" alt="Gui" class="brand-avatar">
+        <div class="brand-text">
+          <h1>Receitas do Gui</h1>
+          <p>da horta para a cozinha</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <button id="theme-btn" class="btn-icon" type="button" aria-label="Alternar tema dia/noite" title="Alternar tema">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>🌾 <strong>Receitas do Gui</strong> — feito com carinho e comida de verdade.</p>
+      <p>© <span id="year"></span> <a href="https://receitas.guineves.com.br">Guilherme Neves</a> · Hospedado no GitHub Pages</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Alternância de Tema (compartilha cookie com o domínio .guineves.com.br)
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) {
+      const setTheme = (theme) => {
+        const host = window.location.hostname;
+        const domain = host.includes('guineves.com.br') ? '; domain=.guineves.com.br' : '';
+        document.cookie = `site_theme=${theme}; path=/${domain}; max-age=31536000; SameSite=Lax`;
+        try { localStorage.setItem('theme', theme); } catch(e) {}
+      };
+
+      const updateIcon = () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const icon = themeBtn.querySelector('.theme-icon');
+        if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      };
+      updateIcon();
+
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          setTheme('light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          setTheme('dark');
+        }
+        updateIcon();
+      });
+    }
+
+    // Interatividade da Checklist de Ingredientes
+    document.addEventListener('DOMContentLoaded', () => {
+      const recipeSlug = window.location.pathname.replace(/\/$/, '').split('/').pop() || 'global';
+      const storageKey = `ingredients_${recipeSlug}`;
+      let checkedItems = {};
+      try {
+        checkedItems = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      } catch (e) {}
+
+      // Encontra exclusivamente os itens da checklist de ingredientes gerados pelo Jekyll (.task-list-item)
+      const items = document.querySelectorAll('.recipe-content ul.task-list li.task-list-item');
+      items.forEach((li, idx) => {
+        const checkbox = li.querySelector('input[type="checkbox"]');
+        if (!checkbox) return;
+
+        checkbox.removeAttribute('disabled');
+
+        const itemKey = `${idx}_${li.textContent.trim().slice(0, 25)}`;
+        if (checkedItems[itemKey]) {
+          checkbox.checked = true;
+          li.classList.add('checked');
+        }
+
+        li.addEventListener('click', (e) => {
+          if (e.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+          }
+          li.classList.toggle('checked', checkbox.checked);
+          checkedItems[itemKey] = checkbox.checked;
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(checkedItems));
+          } catch (err) {}
+        });
+      });
+    });
+  </script>
+
+  {% if page.url == "/404.html" %}
+  <script>window.goatcounter = { path: (p) => '404/' + location.host + p };</script>
+  {% else %}
+  <script>window.goatcounter = { path: (p) => location.host + p };</script>
+  {% endif %}
+  <script data-goatcounter="https://guineves.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
