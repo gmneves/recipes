@@ -1,0 +1,703 @@
+---
+layout: default
+title: "Conversor de Medidas Culinárias"
+permalink: /conversor/
+excerpt: "Conversor prático de medidas culinárias para o sistema métrico e vice-versa: colheres, xícaras, copos, ml, gramas por ingrediente e temperatura do forno."
+---
+
+<div class="container">
+
+  <div class="back-nav">
+    <a href="{{ '/' | relative_url }}">← voltar para todas as receitas</a>
+  </div>
+
+  <div class="converter-hero">
+    <div class="converter-hero-text">
+      <h1 class="converter-title">⚖️ Conversor de Medidas Culinárias</h1>
+      <p class="converter-desc">
+        Converta medidas caseiras (xícaras, colheres e copos) para o sistema métrico (ml e gramas) e vice-versa, sem complicação na cozinha.
+      </p>
+    </div>
+  </div>
+
+  <!-- Abas de Navegação do Conversor -->
+  <div class="converter-tabs">
+    <button type="button" class="tab-btn active" data-tab="tab-volume">
+      🥄 Medidas &amp; Líquidos
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-ingredients">
+      🌾 Ingredientes (Volume ⇄ Gramas)
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-oven">
+      🌡️ Temperatura do Forno
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-tables">
+      📋 Tabelas Rápidas
+    </button>
+  </div>
+
+  <!-- ABA 1: VOLUME E MEDIDAS CASEIRAS -->
+  <section id="tab-volume" class="converter-panel active">
+    <div class="converter-card">
+      <div class="panel-header">
+        <h2>🥄 Conversão de Volumes e Medidas Caseiras</h2>
+        <p>Converta mililitros, litros, xícaras, copos e colheres em tempo real.</p>
+      </div>
+
+      <div class="converter-grid">
+        <!-- De -->
+        <div class="calc-group">
+          <label for="vol-amount">Quantidade</label>
+          <input type="number" id="vol-amount" value="1" min="0" step="any" inputmode="decimal">
+        </div>
+
+        <div class="calc-group">
+          <label for="vol-from">De</label>
+          <select id="vol-from">
+            <option value="colher_sopa" selected>Colher de sopa (15 ml)</option>
+            <option value="colher_sobremesa">Colher de sobremesa (10 ml)</option>
+            <option value="colher_cha">Colher de chá (5 ml)</option>
+            <option value="colher_cafe">Colher de café (2,5 ml)</option>
+            <option value="xicara">Xícara de chá padrão (240 ml)</option>
+            <option value="copo_americano">Copo americano / requeijão (200 ml)</option>
+            <option value="ml">Mililitros (ml)</option>
+            <option value="l">Litros (L)</option>
+            <option value="fl_oz">Onça fluida (fl oz ~29,57 ml)</option>
+          </select>
+        </div>
+
+        <!-- Botão Inverter -->
+        <div class="calc-swap-wrap">
+          <button type="button" id="vol-swap-btn" class="btn-swap" title="Inverter medidas">
+            ⇄ Inverter
+          </button>
+        </div>
+
+        <!-- Para -->
+        <div class="calc-group">
+          <label for="vol-to">Para</label>
+          <select id="vol-to">
+            <option value="ml" selected>Mililitros (ml)</option>
+            <option value="l">Litros (L)</option>
+            <option value="colher_sopa">Colher de sopa (15 ml)</option>
+            <option value="colher_sobremesa">Colher de sobremesa (10 ml)</option>
+            <option value="colher_cha">Colher de chá (5 ml)</option>
+            <option value="colher_cafe">Colher de café (2,5 ml)</option>
+            <option value="xicara">Xícara de chá padrão (240 ml)</option>
+            <option value="copo_americano">Copo americano / requeijão (200 ml)</option>
+            <option value="fl_oz">Onça fluida (fl oz ~29,57 ml)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Resultado em Destaque -->
+      <div class="result-box" id="vol-result-box">
+        <span class="result-label">Resultado:</span>
+        <div class="result-main">
+          <span class="result-number" id="vol-result-val">15</span>
+          <span class="result-unit" id="vol-result-unit">ml</span>
+        </div>
+        <p class="result-hint" id="vol-result-hint">Equivale a 1 colher de sopa cheia nivelada.</p>
+      </div>
+
+      <!-- Chips de atalhos rápidos -->
+      <div class="quick-chips">
+        <span class="chips-title">Atalhos frequentes:</span>
+        <button type="button" class="chip-btn" data-from="xicara" data-to="ml" data-val="1">1 xícara ➔ ml</button>
+        <button type="button" class="chip-btn" data-from="xicara" data-to="ml" data-val="0.5">1/2 xícara ➔ ml</button>
+        <button type="button" class="chip-btn" data-from="copo_americano" data-to="ml" data-val="1">1 copo americano ➔ ml</button>
+        <button type="button" class="chip-btn" data-from="colher_sopa" data-to="ml" data-val="1">1 colher de sopa ➔ ml</button>
+        <button type="button" class="chip-btn" data-from="colher_cha" data-to="ml" data-val="1">1 colher de chá ➔ ml</button>
+        <button type="button" class="chip-btn" data-from="ml" data-to="colher_sopa" data-val="60">60 ml ➔ colheres</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABA 2: INGREDIENTES ESPECÍFICOS (VOLUME <> GRAMAS) -->
+  <section id="tab-ingredients" class="converter-panel">
+    <div class="converter-card">
+      <div class="panel-header">
+        <h2>🌾 Ingredientes: Volume ⇄ Peso (Gramas)</h2>
+        <p>Como cada ingrediente tem uma densidade diferente, 1 xícara de farinha <strong>não</strong> pesa o mesmo que 1 xícara de açúcar ou manteiga!</p>
+      </div>
+
+      <div class="calc-group full-width">
+        <label for="ing-select">Selecione o Ingrediente</label>
+        <select id="ing-select" class="select-large">
+          <optgroup label="Farinhas e Grãos">
+            <option value="farinha_trigo" selected>🌾 Farinha de trigo (1 xícara = 120 g)</option>
+            <option value="amido_milho">🌽 Amido de milho / Maizena (1 xícara = 110 g)</option>
+            <option value="aveia_flocos">🌾 Aveia em flocos (1 xícara = 90 g)</option>
+            <option value="arroz_cru">🍚 Arroz cru (1 xícara = 180 g)</option>
+            <option value="farinha_rosca">🍞 Farinha de rosca (1 xícara = 130 g)</option>
+          </optgroup>
+          <optgroup label="Açúcares e Doces">
+            <option value="acucar_refinado">🍚 Açúcar refinado (1 xícara = 180 g)</option>
+            <option value="acucar_cristal">💎 Açúcar cristal (1 xícara = 200 g)</option>
+            <option value="acucar_mascavo">🍯 Açúcar mascavo compactado (1 xícara = 150 g)</option>
+            <option value="acucar_confeiteiro">🧁 Açúcar de confeiteiro / impalpável (1 xícara = 130 g)</option>
+            <option value="cacau_po">🍫 Cacau ou chocolate em pó (1 xícara = 100 g)</option>
+            <option value="mel">🍯 Mel / Melado (1 xícara = 340 g)</option>
+          </optgroup>
+          <optgroup label="Gorduras e Laticínios">
+            <option value="manteiga">🧈 Manteiga / Margarina em temperatura ambiente (1 xícara = 200 g)</option>
+            <option value="oleo">🌻 Óleo vegetal / Azeite (1 xícara = 215 g)</option>
+            <option value="leite_liquido">🥛 Leite integral / Água (1 xícara = 240 g)</option>
+            <option value="leite_po">🥛 Leite em pó (1 xícara = 120 g)</option>
+            <option value="queijo_ralado">🧀 Queijo parmesão ralado (1 xícara = 100 g)</option>
+          </optgroup>
+          <optgroup label="Pequenas Medidas (Colheres)">
+            <option value="fermento_quimico">🧁 Fermento químico em pó (1 colher de sopa = 12 g)</option>
+            <option value="fermento_biologico_seco">🥖 Fermento biológico seco / instantâneo (1 colher de sopa = 10 g)</option>
+            <option value="sal_refinado">🧂 Sal refinado (1 colher de sopa = 18 g)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Direção da conversão -->
+      <div class="calc-direction-toggle">
+        <label class="toggle-option">
+          <input type="radio" name="ing-direction" value="vol_to_weight" checked>
+          <span>De Medida Caseira ➔ Para Gramas (g)</span>
+        </label>
+        <label class="toggle-option">
+          <input type="radio" name="ing-direction" value="weight_to_vol">
+          <span>De Gramas (g) ➔ Para Medida Caseira</span>
+        </label>
+      </div>
+
+      <div class="converter-grid" id="ing-inputs-grid">
+        <div class="calc-group">
+          <label id="ing-amount-label" for="ing-amount">Quantidade</label>
+          <input type="number" id="ing-amount" value="1" min="0" step="any" inputmode="decimal">
+        </div>
+
+        <div class="calc-group" id="ing-measure-wrap">
+          <label for="ing-measure">Medida Culinária</label>
+          <select id="ing-measure">
+            <option value="xicara" selected>Xícara de chá (240 ml)</option>
+            <option value="copo_americano">Copo americano (200 ml)</option>
+            <option value="colher_sopa">Colher de sopa</option>
+            <option value="colher_sobremesa">Colher de sobremesa</option>
+            <option value="colher_cha">Colher de chá</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Resultado dos Ingredientes -->
+      <div class="result-box highlight" id="ing-result-box">
+        <span class="result-label">Peso aproximado:</span>
+        <div class="result-main">
+          <span class="result-number" id="ing-result-val">120</span>
+          <span class="result-unit" id="ing-result-unit">gramas (g)</span>
+        </div>
+        <p class="result-hint" id="ing-result-hint">Equivale a 1 xícara de farinha de trigo nivelada com uma faca.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABA 3: TEMPERATURA DE FORNO -->
+  <section id="tab-oven" class="converter-panel">
+    <div class="converter-card">
+      <div class="panel-header">
+        <h2>🌡️ Temperatura do Forno: Celsius (°C) ⇄ Fahrenheit (°F)</h2>
+        <p>Digite em qualquer um dos campos para converter instantaneamente e veja a classificação do fogo.</p>
+      </div>
+
+      <div class="oven-converter-grid">
+        <div class="calc-group">
+          <label for="temp-celsius">Graus Celsius (°C)</label>
+          <div class="input-with-badge">
+            <input type="number" id="temp-celsius" value="180" step="5">
+            <span class="unit-badge">°C</span>
+          </div>
+        </div>
+
+        <div class="oven-equal">=</div>
+
+        <div class="calc-group">
+          <label for="temp-fahrenheit">Graus Fahrenheit (°F)</label>
+          <div class="input-with-badge">
+            <input type="number" id="temp-fahrenheit" value="356" step="5">
+            <span class="unit-badge">°F</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card indicador do forno -->
+      <div class="oven-indicator-card" id="oven-badge-box">
+        <div class="oven-indicator-header">
+          <span class="oven-status-icon" id="oven-icon">🟡</span>
+          <h3 id="oven-level-title">Forno Médio / Moderado (~180°C / 350°F)</h3>
+        </div>
+        <p id="oven-level-desc">
+          O padrão da confeitaria e panificação caseira! Ideal para bolos fofos, tortas, pães, biscoitos e a maioria dos assados do dia a dia.
+        </p>
+      </div>
+
+      <!-- Tabela Resumo de Forno -->
+      <div class="oven-table-wrap">
+        <table class="reference-table">
+          <thead>
+            <tr>
+              <th>Denominação</th>
+              <th>Celsius (°C)</th>
+              <th>Fahrenheit (°F)</th>
+              <th>Uso típico na cozinha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="oven-dot low"></span> <strong>Baixo / Brando</strong></td>
+              <td>140°C – 160°C</td>
+              <td>285°F – 320°F</td>
+              <td>Pudins em banho-maria, suspiros, cheesecakes delicados</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span class="oven-dot medium"></span> <strong>Médio / Padrão</strong></td>
+              <td>170°C – 190°C</td>
+              <td>340°F – 375°F</td>
+              <td>Bolos, tortas, carnes assadas, quiches, cookies</td>
+            </tr>
+            <tr>
+              <td><span class="oven-dot high"></span> <strong>Alto / Quente</strong></td>
+              <td>200°C – 220°C</td>
+              <td>400°F – 430°F</td>
+              <td>Pão de queijo, massas folhadas, legumes crocantes tostados</td>
+            </tr>
+            <tr>
+              <td><span class="oven-dot max"></span> <strong>Bem Quente / Máx.</strong></td>
+              <td>240°C ou mais</td>
+              <td>465°F ou mais</td>
+              <td>Pizzas caseiras, selar carnes rapidamente, gratinar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABA 4: TABELAS RÁPIDAS DE CONSULTA -->
+  <section id="tab-tables" class="converter-panel">
+    <div class="converter-card">
+      <div class="panel-header">
+        <div class="panel-header-row">
+          <div>
+            <h2>📋 Colinha Rápida da Cozinha</h2>
+            <p>Guia de consulta rápida com as medidas mais usadas no Brasil.</p>
+          </div>
+          <button type="button" class="action-btn" onclick="window.print()">
+            🖨️ Imprimir Colinha
+          </button>
+        </div>
+      </div>
+
+      <div class="tables-grid">
+        <!-- Coluna 1: Líquidos e Medidas Caseiras -->
+        <div class="table-card">
+          <h3>🥄 Líquidos e Utensílios</h3>
+          <table class="reference-table compact">
+            <thead>
+              <tr>
+                <th>Medida Culinária</th>
+                <th>Equivalência em ml</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1 xícara de chá</td><td><strong>240 ml</strong></td></tr>
+              <tr><td>3/4 xícara de chá</td><td><strong>180 ml</strong></td></tr>
+              <tr><td>1/2 xícara de chá</td><td><strong>120 ml</strong></td></tr>
+              <tr><td>1/3 xícara de chá</td><td><strong>80 ml</strong></td></tr>
+              <tr><td>1/4 xícara de chá</td><td><strong>60 ml</strong></td></tr>
+              <tr><td>1 copo americano</td><td><strong>200 ml</strong></td></tr>
+              <tr><td>1 colher de sopa</td><td><strong>15 ml</strong></td></tr>
+              <tr><td>1 colher de sobremesa</td><td><strong>10 ml</strong></td></tr>
+              <tr><td>1 colher de chá</td><td><strong>5 ml</strong></td></tr>
+              <tr><td>1 colher de café</td><td><strong>2,5 ml</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Coluna 2: 1 Xícara em Gramas -->
+        <div class="table-card">
+          <h3>🌾 1 Xícara de Chá (240ml) equivale a:</h3>
+          <table class="reference-table compact">
+            <thead>
+              <tr>
+                <th>Ingrediente</th>
+                <th>Peso em Gramas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Farinha de trigo</td><td><strong>120 g</strong></td></tr>
+              <tr><td>Açúcar refinado</td><td><strong>180 g</strong></td></tr>
+              <tr><td>Açúcar cristal</td><td><strong>200 g</strong></td></tr>
+              <tr><td>Açúcar mascavo</td><td><strong>150 g</strong></td></tr>
+              <tr><td>Manteiga / Margarina</td><td><strong>200 g</strong></td></tr>
+              <tr><td>Cacau / Chocolate em pó</td><td><strong>100 g</strong></td></tr>
+              <tr><td>Amido de milho (Maizena)</td><td><strong>110 g</strong></td></tr>
+              <tr><td>Aveia em flocos</td><td><strong>90 g</strong></td></tr>
+              <tr><td>Óleo vegetal</td><td><strong>215 g</strong></td></tr>
+              <tr><td>Mel / Melado</td><td><strong>340 g</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Coluna 3: 1 Colher de Sopa em Gramas -->
+        <div class="table-card">
+          <h3>🥄 1 Colher de Sopa equivale a:</h3>
+          <table class="reference-table compact">
+            <thead>
+              <tr>
+                <th>Ingrediente</th>
+                <th>Peso em Gramas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Farinha de trigo</td><td><strong>7,5 g</strong></td></tr>
+              <tr><td>Açúcar refinado</td><td><strong>12 g</strong></td></tr>
+              <tr><td>Açúcar cristal</td><td><strong>13 g</strong></td></tr>
+              <tr><td>Manteiga amolecida</td><td><strong>15 g</strong></td></tr>
+              <tr><td>Cacau em pó</td><td><strong>6,5 g</strong></td></tr>
+              <tr><td>Amido de milho</td><td><strong>7 g</strong></td></tr>
+              <tr><td>Fermento em pó químico</td><td><strong>12 g</strong></td></tr>
+              <tr><td>Fermento biológico seco</td><td><strong>10 g</strong></td></tr>
+              <tr><td>Sal refinado</td><td><strong>18 g</strong></td></tr>
+              <tr><td>Mel</td><td><strong>21 g</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Coluna 4: Dicas Práticas -->
+        <div class="table-card tips-card">
+          <h3>💡 Dicas de Mestre na Cozinha</h3>
+          <ul class="kitchen-tips-list">
+            <li><strong>Sempre nivele as colheres e xícaras:</strong> use as costas de uma faca reta para tirar o excesso sem apertar a farinha.</li>
+            <li><strong>Peneire secos antes ou depois?</strong> Se a receita disser <em>"1 xícara de farinha peneirada"</em>, meça primeiro e peneire depois. Farinha já peneirada fica mais fofa e leve.</li>
+            <li><strong>1 colher de sopa</strong> equivale exatamente a <strong>3 colheres de chá</strong>.</li>
+            <li><strong>1 xícara de chá (240ml)</strong> equivale a <strong>16 colheres de sopa</strong>.</li>
+            <li><strong>Colher rasa vs cheia:</strong> Nas receitas deste caderno, a menos que especificado, todas as medidas são niveladas (rasas).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // ----------------------------------------------------
+    // GERENCIAMENTO DE ABAS
+    // ----------------------------------------------------
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.converter-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-tab');
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabPanels.forEach(p => p.classList.remove('active'));
+
+        btn.classList.add('active');
+        const targetPanel = document.getElementById(targetId);
+        if (targetPanel) targetPanel.classList.add('active');
+      });
+    });
+
+    // ----------------------------------------------------
+    // 1. CONVERSÃO DE VOLUMES E MEDIDAS CASEIRAS
+    // ----------------------------------------------------
+    // Fatores de conversão para ML (base mililitros)
+    const VOL_FACTORS = {
+      ml: 1,
+      l: 1000,
+      xicara: 240,
+      copo_americano: 200,
+      colher_sopa: 15,
+      colher_sobremesa: 10,
+      colher_cha: 5,
+      colher_cafe: 2.5,
+      fl_oz: 29.5735
+    };
+
+    const VOL_NAMES = {
+      ml: { sing: 'ml', plur: 'ml' },
+      l: { sing: 'litro', plur: 'litros' },
+      xicara: { sing: 'xícara de chá', plur: 'xícaras de chá' },
+      copo_americano: { sing: 'copo americano', plur: 'copos americanos' },
+      colher_sopa: { sing: 'colher de sopa', plur: 'colheres de sopa' },
+      colher_sobremesa: { sing: 'colher de sobremesa', plur: 'colheres de sobremesa' },
+      colher_cha: { sing: 'colher de chá', plur: 'colheres de chá' },
+      colher_cafe: { sing: 'colher de café', plur: 'colheres de café' },
+      fl_oz: { sing: 'onça fluida (fl oz)', plur: 'onças fluidas (fl oz)' }
+    };
+
+    const volAmountInput = document.getElementById('vol-amount');
+    const volFromSelect = document.getElementById('vol-from');
+    const volToSelect = document.getElementById('vol-to');
+    const volSwapBtn = document.getElementById('vol-swap-btn');
+    const volResultVal = document.getElementById('vol-result-val');
+    const volResultUnit = document.getElementById('vol-result-unit');
+    const volResultHint = document.getElementById('vol-result-hint');
+
+    function formatNumber(num) {
+      if (isNaN(num) || num === null) return '0';
+      if (Number.isInteger(num)) return num.toString();
+      // Arredonda para no máximo 3 casas decimais eliminando zeros à direita
+      const rounded = Math.round(num * 1000) / 1000;
+      return rounded.toLocaleString('pt-BR', { maximumFractionDigits: 3 });
+    }
+
+    function getFractionText(val, unitKey) {
+      if (unitKey !== 'xicara') return '';
+      const fracMap = [
+        { v: 0.25, t: '1/4 de xícara' },
+        { v: 0.33, t: '1/3 de xícara' },
+        { v: 0.5, t: '1/2 xícara (meia xícara)' },
+        { v: 0.66, t: '2/3 de xícara' },
+        { v: 0.75, t: '3/4 de xícara' },
+        { v: 1.25, t: '1 xícara e 1/4' },
+        { v: 1.33, t: '1 xícara e 1/3' },
+        { v: 1.5, t: '1 xícara e 1/2' },
+        { v: 1.75, t: '1 xícara e 3/4' },
+        { v: 2.5, t: '2 xícaras e 1/2' }
+      ];
+      for (const item of fracMap) {
+        if (Math.abs(val - item.v) < 0.04) {
+          return `Equivale a aproximadamente ${item.t}.`;
+        }
+      }
+      return '';
+    }
+
+    function updateVolumeConversion() {
+      const amount = parseFloat(volAmountInput.value) || 0;
+      const fromKey = volFromSelect.value;
+      const toKey = volToSelect.value;
+
+      if (amount <= 0) {
+        volResultVal.textContent = '0';
+        volResultUnit.textContent = VOL_NAMES[toKey].plur;
+        volResultHint.textContent = 'Digite uma quantidade maior que zero para converter.';
+        return;
+      }
+
+      // Converte para ML base e depois para a unidade final
+      const ml = amount * VOL_FACTORS[fromKey];
+      const result = ml / VOL_FACTORS[toKey];
+
+      volResultVal.textContent = formatNumber(result);
+      const isPlural = result > 1.05 || result < 0.95;
+      const unitLabel = isPlural ? VOL_NAMES[toKey].plur : VOL_NAMES[toKey].sing;
+      volResultUnit.textContent = unitLabel;
+
+      let hint = '';
+      const fracHint = getFractionText(result, toKey);
+      if (fracHint) {
+        hint = fracHint;
+      } else if (toKey === 'ml' && fromKey === 'xicara' && amount === 1) {
+        hint = 'Padrão culinário brasileiro (xícara de chá nivelada = 240 ml).';
+      } else if (toKey === 'ml' && fromKey === 'colher_sopa') {
+        hint = `${formatNumber(amount)} colher(es) de sopa correspondem a ${formatNumber(result)} ml (${formatNumber(amount * 3)} colheres de chá).`;
+      } else {
+        hint = `${formatNumber(amount)} ${amount === 1 ? VOL_NAMES[fromKey].sing : VOL_NAMES[fromKey].plur} = ${formatNumber(result)} ${unitLabel}.`;
+      }
+      volResultHint.textContent = hint;
+    }
+
+    volAmountInput.addEventListener('input', updateVolumeConversion);
+    volFromSelect.addEventListener('change', updateVolumeConversion);
+    volToSelect.addEventListener('change', updateVolumeConversion);
+
+    volSwapBtn.addEventListener('click', () => {
+      const currentFrom = volFromSelect.value;
+      const currentTo = volToSelect.value;
+      volFromSelect.value = currentTo;
+      volToSelect.value = currentFrom;
+      updateVolumeConversion();
+    });
+
+    // Chips de atalho
+    document.querySelectorAll('.quick-chips .chip-btn').forEach(chip => {
+      chip.addEventListener('click', () => {
+        volFromSelect.value = chip.getAttribute('data-from');
+        volToSelect.value = chip.getAttribute('data-to');
+        volAmountInput.value = chip.getAttribute('data-val');
+        updateVolumeConversion();
+      });
+    });
+
+    updateVolumeConversion();
+
+
+    // ----------------------------------------------------
+    // 2. CONVERSÃO DE INGREDIENTES (VOLUME <> GRAMAS)
+    // ----------------------------------------------------
+    // Densidades dos ingredientes: gramas por xícara (240ml)
+    const INGREDIENTS_DATA = {
+      farinha_trigo: { name: 'farinha de trigo', cupGrams: 120, soupGrams: 7.5, teaGrams: 2.5 },
+      amido_milho: { name: 'amido de milho (Maizena)', cupGrams: 110, soupGrams: 7, teaGrams: 2.5 },
+      aveia_flocos: { name: 'aveia em flocos', cupGrams: 90, soupGrams: 6, teaGrams: 2 },
+      arroz_cru: { name: 'arroz cru', cupGrams: 180, soupGrams: 12, teaGrams: 4 },
+      farinha_rosca: { name: 'farinha de rosca', cupGrams: 130, soupGrams: 8.5, teaGrams: 3 },
+      acucar_refinado: { name: 'açúcar refinado', cupGrams: 180, soupGrams: 12, teaGrams: 4 },
+      acucar_cristal: { name: 'açúcar cristal', cupGrams: 200, soupGrams: 13, teaGrams: 4.5 },
+      acucar_mascavo: { name: 'açúcar mascavo', cupGrams: 150, soupGrams: 10, teaGrams: 3.5 },
+      acucar_confeiteiro: { name: 'açúcar de confeiteiro', cupGrams: 130, soupGrams: 8, teaGrams: 2.7 },
+      cacau_po: { name: 'cacau / chocolate em pó', cupGrams: 100, soupGrams: 6.5, teaGrams: 2.5 },
+      mel: { name: 'mel / melado', cupGrams: 340, soupGrams: 21, teaGrams: 7 },
+      manteiga: { name: 'manteiga / margarina', cupGrams: 200, soupGrams: 15, teaGrams: 5 },
+      oleo: { name: 'óleo vegetal / azeite', cupGrams: 215, soupGrams: 13.5, teaGrams: 4.5 },
+      leite_liquido: { name: 'leite / água', cupGrams: 240, soupGrams: 15, teaGrams: 5 },
+      leite_po: { name: 'leite em pó', cupGrams: 120, soupGrams: 8, teaGrams: 2.7 },
+      queijo_ralado: { name: 'queijo parmesão ralado', cupGrams: 100, soupGrams: 7, teaGrams: 2.5 },
+      fermento_quimico: { name: 'fermento em pó químico', cupGrams: 190, soupGrams: 12, teaGrams: 4 },
+      fermento_biologico_seco: { name: 'fermento biológico seco', cupGrams: 160, soupGrams: 10, teaGrams: 3.3 },
+      sal_refinado: { name: 'sal refinado', cupGrams: 280, soupGrams: 18, teaGrams: 6 }
+    };
+
+    const ingSelect = document.getElementById('ing-select');
+    const ingAmountInput = document.getElementById('ing-amount');
+    const ingAmountLabel = document.getElementById('ing-amount-label');
+    const ingMeasureSelect = document.getElementById('ing-measure');
+    const ingMeasureWrap = document.getElementById('ing-measure-wrap');
+    const ingResultVal = document.getElementById('ing-result-val');
+    const ingResultUnit = document.getElementById('ing-result-unit');
+    const ingResultHint = document.getElementById('ing-result-hint');
+    const ingDirectionRadios = document.querySelectorAll('input[name="ing-direction"]');
+
+    function getIngWeightPerUnit(ingKey, unitKey) {
+      const data = INGREDIENTS_DATA[ingKey];
+      if (!data) return 100;
+      if (unitKey === 'xicara') return data.cupGrams;
+      if (unitKey === 'copo_americano') return (data.cupGrams / 240) * 200;
+      if (unitKey === 'colher_sopa') return data.soupGrams;
+      if (unitKey === 'colher_sobremesa') return (data.soupGrams * 2) / 3;
+      if (unitKey === 'colher_cha') return data.teaGrams;
+      return data.cupGrams;
+    }
+
+    function updateIngredientConversion() {
+      const ingKey = ingSelect.value;
+      const data = INGREDIENTS_DATA[ingKey];
+      const direction = document.querySelector('input[name="ing-direction"]:checked').value;
+      const amount = parseFloat(ingAmountInput.value) || 0;
+      const measureKey = ingMeasureSelect.value;
+
+      if (direction === 'vol_to_weight') {
+        // Volume ➔ Gramas
+        ingAmountLabel.textContent = 'Quantidade da medida caseira';
+        ingMeasureWrap.style.display = 'flex';
+
+        if (amount <= 0) {
+          ingResultVal.textContent = '0';
+          ingResultUnit.textContent = 'gramas (g)';
+          ingResultHint.textContent = 'Digite uma quantidade para calcular o peso.';
+          return;
+        }
+
+        const weightPerUnit = getIngWeightPerUnit(ingKey, measureKey);
+        const totalGrams = amount * weightPerUnit;
+
+        ingResultVal.textContent = formatNumber(totalGrams);
+        ingResultUnit.textContent = 'gramas (g)';
+
+        const frac = getFractionText(amount, measureKey);
+        const measureName = measureKey === 'xicara' ? (amount === 1 ? 'xícara' : 'xícaras') :
+                            measureKey === 'colher_sopa' ? (amount === 1 ? 'colher de sopa' : 'colheres de sopa') :
+                            measureKey === 'copo_americano' ? (amount === 1 ? 'copo americano' : 'copos americanos') : 'medida';
+
+        ingResultHint.textContent = `${formatNumber(amount)} ${measureName} de ${data.name} pesam aproximadamente ${formatNumber(totalGrams)} g. ${frac}`;
+      } else {
+        // Gramas ➔ Volume
+        ingAmountLabel.textContent = 'Quantidade em Gramas (g)';
+        ingMeasureWrap.style.display = 'none';
+
+        if (amount <= 0) {
+          ingResultVal.textContent = '0';
+          ingResultUnit.textContent = 'xícaras';
+          ingResultHint.textContent = 'Digite a quantidade em gramas para obter as medidas equivalentes.';
+          return;
+        }
+
+        const cups = amount / data.cupGrams;
+        const soupSpoons = amount / data.soupGrams;
+
+        if (cups >= 0.5) {
+          ingResultVal.textContent = formatNumber(cups);
+          ingResultUnit.textContent = cups > 1 ? 'xícaras de chá' : 'xícara de chá';
+          const frac = getFractionText(cups, 'xicara');
+          ingResultHint.textContent = `${formatNumber(amount)} g de ${data.name} equivalem a cerca de ${formatNumber(cups)} xícara(s) (${formatNumber(soupSpoons)} colheres de sopa). ${frac}`;
+        } else {
+          ingResultVal.textContent = formatNumber(soupSpoons);
+          ingResultUnit.textContent = soupSpoons > 1 ? 'colheres de sopa' : 'colher de sopa';
+          ingResultHint.textContent = `${formatNumber(amount)} g de ${data.name} equivalem a cerca de ${formatNumber(soupSpoons)} colher(es) de sopa (${formatNumber(cups)} xícara).`;
+        }
+      }
+    }
+
+    ingSelect.addEventListener('change', updateIngredientConversion);
+    ingAmountInput.addEventListener('input', updateIngredientConversion);
+    ingMeasureSelect.addEventListener('change', updateIngredientConversion);
+    ingDirectionRadios.forEach(r => r.addEventListener('change', updateIngredientConversion));
+
+    updateIngredientConversion();
+
+
+    // ----------------------------------------------------
+    // 3. CONVERSÃO DE TEMPERATURA DE FORNO
+    // ----------------------------------------------------
+    const tempCelsiusInput = document.getElementById('temp-celsius');
+    const tempFahrInput = document.getElementById('temp-fahrenheit');
+    const ovenIcon = document.getElementById('oven-icon');
+    const ovenLevelTitle = document.getElementById('oven-level-title');
+    const ovenLevelDesc = document.getElementById('oven-level-desc');
+
+    function updateOvenClassification(celsius) {
+      if (celsius < 135) {
+        ovenIcon.textContent = '❄️';
+        ovenLevelTitle.textContent = `Forno Muito Baixo (~${Math.round(celsius)}°C)`;
+        ovenLevelDesc.textContent = 'Indicado para secar ervas, desidratar frutas, suspiros bem lentos ou manter pratos aquecidos sem continuar o cozimento.';
+      } else if (celsius <= 165) {
+        ovenIcon.textContent = '🟢';
+        ovenLevelTitle.textContent = `Forno Baixo / Brando (~${Math.round(celsius)}°C)`;
+        ovenLevelDesc.textContent = 'Calor suave e constante. Perfeito para pudins em banho-maria, merengues, suspiros e bolos delicados que não podem dourar rápido.';
+      } else if (celsius <= 195) {
+        ovenIcon.textContent = '🟡';
+        ovenLevelTitle.textContent = `Forno Médio / Moderado (~${Math.round(celsius)}°C)`;
+        ovenLevelDesc.textContent = 'A temperatura coringa da culinária (180°C / 350°F)! Ideal para bolos caseiros, tortas, biscoitos, pães doces e a maioria das carnes assadas.';
+      } else if (celsius <= 230) {
+        ovenIcon.textContent = '🟠';
+        ovenLevelTitle.textContent = `Forno Alto / Quente (~${Math.round(celsius)}°C)`;
+        ovenLevelDesc.textContent = 'Cozimento rápido para formar crosta dourada e crocante. Essencial para pão de queijo, massas folhadas, batatas rústicas e peixes.';
+      } else {
+        ovenIcon.textContent = '🔴';
+        ovenLevelTitle.textContent = `Forno Muito Quente / Máximo (~${Math.round(celsius)}°C)`;
+        ovenLevelDesc.textContent = 'Calor intenso! Indicado para pizzas artesanais na pedra, selar carnes grossas e dourar/gratinar pratos nos minutos finais.';
+      }
+    }
+
+    tempCelsiusInput.addEventListener('input', () => {
+      const c = parseFloat(tempCelsiusInput.value);
+      if (!isNaN(c)) {
+        const f = Math.round((c * 9/5) + 32);
+        tempFahrInput.value = f;
+        updateOvenClassification(c);
+      }
+    });
+
+    tempFahrInput.addEventListener('input', () => {
+      const f = parseFloat(tempFahrInput.value);
+      if (!isNaN(f)) {
+        const c = Math.round((f - 32) * 5/9);
+        tempCelsiusInput.value = c;
+        updateOvenClassification(c);
+      }
+    });
+
+    updateOvenClassification(180);
+
+  });
+</script>

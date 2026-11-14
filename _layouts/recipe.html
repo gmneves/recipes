@@ -1,0 +1,103 @@
+---
+layout: default
+---
+
+<article class="recipe-single">
+  <div class="container">
+
+    <div class="back-nav">
+      <a href="{{ '/' | relative_url }}">← voltar para todas as receitas</a>
+    </div>
+
+    <div class="recipe-hero-box">
+      <h1 class="recipe-single-title">{{ page.title }}</h1>
+      {% if page.excerpt %}
+        <p class="recipe-single-excerpt">{{ page.excerpt | strip_html }}</p>
+      {% endif %}
+
+      <div class="recipe-info-grid">
+        <div class="info-item">
+          <span class="info-label">⏱️ Preparo</span>
+          <span class="info-val">{{ page.prep_time | default: "15 min" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">🍳 Cozimento</span>
+          <span class="info-val">{{ page.cook_time | default: "30 min" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">🍽️ Rendimento</span>
+          <span class="info-val">{{ page.servings | default: "4 porções" }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">⭐ Qualidade</span>
+          <span class="info-val">{{ page.difficulty | default: "Fácil" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="recipe-content">
+      {{ content }}
+    </div>
+
+    <div class="recipe-actions">
+      <button id="fav-recipe-single-btn" class="action-btn" type="button" data-slug="{{ page.slug }}" title="Marcar ou desmarcar como favorita">
+        <span class="single-fav-icon">☆</span> <span class="single-fav-text">Favoritar Receita</span>
+      </button>
+
+      <button class="action-btn" type="button" onclick="window.print()">
+        🖨️ Imprimir Receita
+      </button>
+
+      <button id="copy-recipe-link" class="action-btn" type="button">
+        🔗 Copiar Link
+      </button>
+
+      <a class="action-btn" href="https://api.whatsapp.com/send?text={{ page.title | append: ' — Veja esta receita: ' | append: site.url | append: page.url | url_encode }}" target="_blank" rel="noopener">
+        💬 WhatsApp
+      </a>
+    </div>
+
+  </div>
+</article>
+
+<script>
+  const copyBtn = document.getElementById('copy-recipe-link');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const origText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '✅ Link copiado!';
+        setTimeout(() => { copyBtn.innerHTML = origText; }, 2000);
+      });
+    });
+  }
+
+  const favSingleBtn = document.getElementById('fav-recipe-single-btn');
+  if (favSingleBtn) {
+    const slug = favSingleBtn.getAttribute('data-slug');
+    const starIcon = favSingleBtn.querySelector('.single-fav-icon');
+    const textLabel = favSingleBtn.querySelector('.single-fav-text');
+
+    function updateSingleFavUI() {
+      let favs = [];
+      try { favs = JSON.parse(localStorage.getItem('receitas_gui_favorites') || '[]'); } catch(e) {}
+      const isFav = favs.includes(slug);
+      if (starIcon) starIcon.textContent = isFav ? '⭐' : '☆';
+      if (textLabel) textLabel.textContent = isFav ? 'Receita Favorita' : 'Favoritar Receita';
+      favSingleBtn.classList.toggle('is-fav', isFav);
+    }
+
+    favSingleBtn.addEventListener('click', () => {
+      let favs = [];
+      try { favs = JSON.parse(localStorage.getItem('receitas_gui_favorites') || '[]'); } catch(e) {}
+      const idx = favs.indexOf(slug);
+      if (idx > -1) favs.splice(idx, 1);
+      else favs.push(slug);
+      try { localStorage.setItem('receitas_gui_favorites', JSON.stringify(favs)); } catch(e) {}
+      updateSingleFavUI();
+      if (window.updateRecipeDrawerFavs) window.updateRecipeDrawerFavs();
+    });
+
+    updateSingleFavUI();
+  }
+</script>

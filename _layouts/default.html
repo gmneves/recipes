@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | absolute_url }}">
+  <link rel="icon" type="image/x-icon" href="{{ '/assets/favicon.ico' | relative_url }}">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:title" content="{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}">
+  <meta property="og:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+  <meta property="og:type" content="{% if page.layout == 'recipe' %}article{% else %}website{% endif %}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ '/assets/og-image.png' | absolute_url }}">
+  <meta property="og:image:secure_url" content="{{ '/assets/og-image.png' | absolute_url }}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ site.title }}">
+  <meta property="og:locale" content="pt_BR">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}">
+  <meta name="twitter:description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+  <meta name="twitter:image" content="{{ '/assets/og-image.png' | absolute_url }}">
+
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+
+  <!-- Previne flash visual do tema (FOUC) lendo o cookie unificado de .guineves.com.br -->
+  <script>
+    (function() {
+      function getTheme() {
+        const match = document.cookie.match(/(^|;)\s*site_theme=([^;]+)/);
+        if (match) return match[2];
+        try { return localStorage.getItem('theme'); } catch(e) {}
+        return null;
+      }
+      if (getTheme() === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="{{ '/' | relative_url }}" class="brand">
+        <img src="{{ '/assets/gui-portrait.png' | relative_url }}" alt="Gui" class="brand-avatar">
+        <div class="brand-text">
+          <h1>Receitas do Gui</h1>
+          <p>da horta para a cozinha</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <button id="recipe-index-toggle" class="nav-link-btn" type="button" title="Abrir Índice de Receitas (Atalho: / ou I)" aria-label="Abrir Índice de Receitas">
+          <span class="nav-icon">📖</span>
+          <span class="nav-label">Índice</span>
+        </button>
+        <a href="{{ '/conversor/' | relative_url }}" class="nav-link-btn" title="Conversor de Medidas Culinárias">
+          <span class="nav-icon">⚖️</span>
+          <span class="nav-label">Conversor</span>
+        </a>
+        <button id="pix-coffee-btn" class="coffee-badge" type="button" title="Apoiar o projeto com um café via Pix" aria-label="Pagar um café via Pix">
+          <span class="nav-icon">☕</span>
+          <span class="nav-label">Pagar um café</span>
+        </button>
+        <button id="theme-btn" class="btn-icon" type="button" aria-label="Alternar tema dia/noite" title="Alternar tema">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>🌾 <strong>Receitas do Gui</strong> — feito com carinho e comida de verdade. · <a href="{{ '/conversor/' | relative_url }}">⚖️ Conversor de Medidas</a></p>
+      <p>© <span id="year"></span> <a href="https://receitas.guineves.com.br">Guilherme Neves</a> · Hospedado no GitHub Pages</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Alternância de Tema (compartilha cookie com o domínio .guineves.com.br)
+    const themeBtn = document.getElementById('theme-btn');
+    if (themeBtn) {
+      const setTheme = (theme) => {
+        const host = window.location.hostname;
+        const domain = host.includes('guineves.com.br') ? '; domain=.guineves.com.br' : '';
+        document.cookie = `site_theme=${theme}; path=/${domain}; max-age=31536000; SameSite=Lax`;
+        try { localStorage.setItem('theme', theme); } catch(e) {}
+      };
+
+      const updateIcon = () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const icon = themeBtn.querySelector('.theme-icon');
+        if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      };
+      updateIcon();
+
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (isDark) {
+          document.documentElement.removeAttribute('data-theme');
+          setTheme('light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          setTheme('dark');
+        }
+        updateIcon();
+      });
+    }
+
+    // Interatividade da Checklist de Ingredientes com Reset e Expiração (TTL)
+    document.addEventListener('DOMContentLoaded', () => {
+      const items = document.querySelectorAll('.recipe-content ul.task-list li.task-list-item');
+      if (!items || items.length === 0) return;
+
+      const recipeSlug = window.location.pathname.replace(/\/$/, '').split('/').pop() || 'global';
+      const storageKey = `ingredients_${recipeSlug}`;
+      const TTL_HOURS = 8;
+      const MAX_AGE_MS = TTL_HOURS * 60 * 60 * 1000;
+
+      let checkedItems = {};
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const now = Date.now();
+          if (parsed && typeof parsed === 'object' && parsed.timestamp && (now - parsed.timestamp < MAX_AGE_MS) && parsed.items) {
+            checkedItems = parsed.items;
+          } else {
+            // Expirou após 8h ou formato legado -> limpa automaticamente
+            localStorage.removeItem(storageKey);
+          }
+        }
+      } catch (e) {}
+
+      // Cria a barra de controle e feedback
+      const controlBar = document.createElement('div');
+      controlBar.className = 'checklist-control-bar';
+      controlBar.innerHTML = `
+        <div class="checklist-status-wrap">
+          <span class="checklist-status-text">0 de ${items.length} separados</span>
+          <span class="checklist-complete-badge">🎉 Todos os ingredientes separados!</span>
+        </div>
+        <button type="button" class="btn-reset-checklist is-hidden" title="Desmarcar todos os ingredientes">
+          ↺ Recomeçar
+        </button>
+      `;
+
+      const statusText = controlBar.querySelector('.checklist-status-text');
+      const btnReset = controlBar.querySelector('.btn-reset-checklist');
+
+      // Localiza o cabeçalho 'Ingredientes' ou insere antes da primeira lista
+      const heading = Array.from(document.querySelectorAll('.recipe-content h3')).find(h => h.textContent.includes('Ingredientes'));
+      if (heading) {
+        heading.insertAdjacentElement('afterend', controlBar);
+      } else {
+        const firstList = items[0].closest('ul.task-list');
+        if (firstList) {
+          firstList.insertAdjacentElement('beforebegin', controlBar);
+        }
+      }
+
+      function updateUI() {
+        let checkedCount = 0;
+        items.forEach((li) => {
+          const cb = li.querySelector('input[type="checkbox"]');
+          if (cb && cb.checked) checkedCount++;
+        });
+
+        const total = items.length;
+        statusText.textContent = `${checkedCount} de ${total} separados`;
+
+        if (checkedCount === total && total > 0) {
+          controlBar.classList.add('all-checked');
+        } else {
+          controlBar.classList.remove('all-checked');
+        }
+
+        if (checkedCount > 0) {
+          btnReset.classList.remove('is-hidden');
+        } else {
+          btnReset.classList.add('is-hidden');
+        }
+      }
+
+      function saveState() {
+        const hasAny = Object.values(checkedItems).some(Boolean);
+        try {
+          if (hasAny) {
+            localStorage.setItem(storageKey, JSON.stringify({
+              timestamp: Date.now(),
+              items: checkedItems
+            }));
+          } else {
+            localStorage.removeItem(storageKey);
+          }
+        } catch (err) {}
+      }
+
+      btnReset.addEventListener('click', (e) => {
+        e.stopPropagation();
+        items.forEach((li) => {
+          const checkbox = li.querySelector('input[type="checkbox"]');
+          if (checkbox) checkbox.checked = false;
+          li.classList.remove('checked');
+        });
+        checkedItems = {};
+        try {
+          localStorage.removeItem(storageKey);
+        } catch (err) {}
+        updateUI();
+      });
+
+      // Inicializa e vincula os eventos nos itens da lista
+      items.forEach((li, idx) => {
+        const checkbox = li.querySelector('input[type="checkbox"]');
+        if (!checkbox) return;
+
+        checkbox.removeAttribute('disabled');
+
+        const itemKey = `${idx}_${li.textContent.trim().slice(0, 25)}`;
+        if (checkedItems[itemKey]) {
+          checkbox.checked = true;
+          li.classList.add('checked');
+        }
+
+        li.addEventListener('click', (e) => {
+          if (e.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+          }
+          li.classList.toggle('checked', checkbox.checked);
+          checkedItems[itemKey] = checkbox.checked;
+          saveState();
+          updateUI();
+        });
+      });
+
+      updateUI();
+    });
+  </script>
+
+  {% if page.url == "/404.html" %}
+  <script>window.goatcounter = { path: (p) => '404/' + location.host + p };</script>
+  {% else %}
+  <script>window.goatcounter = { path: (p) => location.host + p };</script>
+  {% endif %}
+  <script data-goatcounter="https://guineves.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  {% include recipe-drawer.html %}
+
+  <!-- PIX COFFEE MODAL -->
+  <div class="pix-modal-backdrop" id="pix-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pix-modal-title">
+    <div class="pix-modal-card">
+      <button type="button" class="pix-modal-close" id="pix-modal-close" aria-label="Fechar janela">✕</button>
+      <div class="pix-modal-header">
+        <span class="pix-modal-icon">☕</span>
+        <h2 id="pix-modal-title">Pagar um café via Pix</h2>
+        <p class="pix-modal-subtitle">
+          O Receitas do Gui é 100% gratuito e sem anúncios. Se alguma receita ou o conversor te ajudou na cozinha, qualquer contribuição ajuda a manter o projeto!
+        </p>
+      </div>
+      <div class="pix-qr-box">
+        <img src="{{ '/assets/pix-qr.svg' | relative_url }}" alt="QR Code Pix" width="188" height="188" class="pix-qr-img">
+      </div>
+      <div class="pix-copy-group">
+        <span class="pix-copy-label">Chave Pix (Aleatória)</span>
+        <div class="pix-copy-row">
+          <code class="pix-copy-value" id="pix-key-value">9ffc3caa-d11c-4bd2-b569-f56f8bb3177d</code>
+          <button type="button" class="pix-copy-btn pix-copy-btn-primary" data-copy-target="pix-key-value" data-copy-msg="Chave Pix copiada!">Copiar chave</button>
+        </div>
+      </div>
+      <div class="pix-copy-group">
+        <span class="pix-copy-label">Pix Copia e Cola</span>
+        <div class="pix-copy-row">
+          <code class="pix-copy-value pix-copy-value-truncate" id="pix-brcode-value">00020126580014br.gov.bcb.pix01369ffc3caa-d11c-4bd2-b569-f56f8bb3177d5204000053039865802BR5915GUILHERME NEVES6006BRASIL62070503***6304FA84</code>
+          <button type="button" class="pix-copy-btn" data-copy-target="pix-brcode-value" data-copy-msg="Código Pix Copia e Cola copiado!">Copiar código</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="pix-toast" class="pix-toast" role="alert" aria-live="polite"></div>
+
+  <script>
+    (function() {
+      const btn = document.getElementById('pix-coffee-btn');
+      const modal = document.getElementById('pix-modal');
+      const closeBtn = document.getElementById('pix-modal-close');
+      const toast = document.getElementById('pix-toast');
+      let toastTimer = null;
+
+      function showPixToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+      }
+
+      function openModal() {
+        if (!modal) return;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+      }
+
+      if (btn) btn.addEventListener('click', openModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !modal.hidden) closeModal();
+        });
+        modal.querySelectorAll('.pix-copy-btn').forEach((copyBtn) => {
+          copyBtn.addEventListener('click', () => {
+            const targetId = copyBtn.getAttribute('data-copy-target');
+            const targetEl = targetId ? document.getElementById(targetId) : null;
+            if (!targetEl) return;
+            const text = targetEl.textContent.trim();
+            const msg = copyBtn.getAttribute('data-copy-msg') || 'Copiado!';
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(text).then(() => showPixToast(msg));
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = text;
+              ta.style.position = 'fixed';
+              ta.style.opacity = '0';
+              document.body.appendChild(ta);
+              ta.select();
+              try { document.execCommand('copy'); showPixToast(msg); } catch (err) {}
+              document.body.removeChild(ta);
+            }
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

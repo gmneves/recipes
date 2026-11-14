@@ -1,0 +1,464 @@
+<!-- ==========================================================================
+     DRAWER GLOBAL: ÍNDICE DE RECEITAS DO GUI (ESTILO CANIVETE / TOOLS)
+     ========================================================================== -->
+<div class="recipe-drawer-backdrop" id="recipe-drawer-backdrop" aria-hidden="true"></div>
+
+<aside class="recipe-drawer" id="recipe-drawer" aria-label="Índice de Receitas" aria-hidden="true">
+  
+  <!-- CABEÇALHO DO ÍNDICE -->
+  <div class="drawer-header">
+    <div class="drawer-title-box">
+      <span class="drawer-book-icon">📖</span>
+      <div>
+        <h2 class="drawer-title">Índice do Caderno</h2>
+        <span class="drawer-counter-badge">{{ site.posts.size }} receitas cadastradas</span>
+      </div>
+    </div>
+    <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="Fechar índice" title="Fechar índice (Esc)">
+      ✕
+    </button>
+  </div>
+
+  <!-- BARRA DE BUSCA EM TEMPO REAL -->
+  <div class="drawer-search-row">
+    <div class="drawer-search-box">
+      <span class="drawer-search-icon">🔍</span>
+      <input type="search" id="drawer-search" placeholder="Buscar receita, ingrediente ou tag..." autocomplete="off" aria-label="Buscar receitas">
+      <span class="drawer-kbd-hint" title="Pressione / para focar a busca">/</span>
+    </div>
+  </div>
+
+  <!-- PÍLULAS DE FILTRO POR CATEGORIA -->
+  <div class="drawer-pills-bar" id="drawer-pills">
+    <button type="button" class="drawer-pill active" data-cat="all">Todas</button>
+    <button type="button" class="drawer-pill drawer-pill-fav" data-cat="fav">
+      ⭐ Favoritas <span class="pill-badge" id="pill-fav-count">0</span>
+    </button>
+    <button type="button" class="drawer-pill" data-cat="doces">Bolos &amp; Doces</button>
+    <button type="button" class="drawer-pill" data-cat="salgados">Salgados</button>
+    <button type="button" class="drawer-pill" data-cat="principais">Principais</button>
+    <button type="button" class="drawer-pill" data-cat="cafe">Café &amp; Manhã</button>
+  </div>
+
+  <!-- CONTEÚDO SCROLLÁVEL: GRUPOS E ITENS -->
+  <div class="drawer-content" id="drawer-content">
+
+    <!-- SEÇÃO DE FAVORITAS (NO TOPO) -->
+    <div class="drawer-group drawer-fav-group" id="drawer-fav-group" data-cat="fav" style="display: none;">
+      <div class="drawer-group-title">
+        <span class="group-title-label">⭐ Minhas Favoritas</span>
+        <span class="group-count-badge" id="drawer-fav-badge">0</span>
+      </div>
+      <div class="drawer-group-list" id="drawer-fav-list">
+        <!-- Itens favoritos gerados dinamicamente via JS -->
+      </div>
+    </div>
+
+    <!-- GRUPO 1: BOLOS & DOCES -->
+    <div class="drawer-group" data-cat="doces">
+      <div class="drawer-group-title">
+        <span class="group-title-label">Bolos &amp; Doces</span>
+        {% assign doces_posts = site.posts | where: "category", "Bolos & Doces" | sort: "title" %}
+        <span class="group-count-badge">{{ doces_posts.size }}</span>
+      </div>
+      <div class="drawer-group-list">
+        {% for post in doces_posts %}
+          <a href="{{ post.url | relative_url }}" class="drawer-item{% if page.url == post.url %} is-current{% endif %}" data-slug="{{ post.slug }}" data-title="{{ post.title | downcase }}" data-cat="doces" data-tags="{% for t in post.tags %}{{ t | downcase | strip }} {% endfor %}" data-excerpt="{{ post.excerpt | strip_html | downcase }}">
+            <span class="drawer-item-bullet" aria-hidden="true">•</span>
+            <div class="drawer-item-body">
+              <span class="drawer-item-name">{{ post.title }}</span>
+              <div class="drawer-item-meta">
+                <span class="meta-pill">⏱️ {{ post.prep_time | default: "15 min" }}</span>
+                {% if post.cook_time %}<span class="meta-pill">🍳 {{ post.cook_time }}</span>{% endif %}
+                {% if post.difficulty %}<span class="meta-pill">⭐ {{ post.difficulty }}</span>{% endif %}
+              </div>
+            </div>
+            <button type="button" class="drawer-fav-star" data-slug="{{ post.slug }}" title="Marcar como favorita" aria-label="Favoritar {{ post.title }}">
+              ☆
+            </button>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- GRUPO 2: SALGADOS & LANCHES -->
+    <div class="drawer-group" data-cat="salgados">
+      <div class="drawer-group-title">
+        <span class="group-title-label">Salgados &amp; Lanches</span>
+        {% assign salgados_posts = site.posts | where: "category", "Salgados & Lanches" | sort: "title" %}
+        <span class="group-count-badge">{{ salgados_posts.size }}</span>
+      </div>
+      <div class="drawer-group-list">
+        {% for post in salgados_posts %}
+          <a href="{{ post.url | relative_url }}" class="drawer-item{% if page.url == post.url %} is-current{% endif %}" data-slug="{{ post.slug }}" data-title="{{ post.title | downcase }}" data-cat="salgados" data-tags="{% for t in post.tags %}{{ t | downcase | strip }} {% endfor %}" data-excerpt="{{ post.excerpt | strip_html | downcase }}">
+            <span class="drawer-item-bullet" aria-hidden="true">•</span>
+            <div class="drawer-item-body">
+              <span class="drawer-item-name">{{ post.title }}</span>
+              <div class="drawer-item-meta">
+                <span class="meta-pill">⏱️ {{ post.prep_time | default: "15 min" }}</span>
+                {% if post.cook_time %}<span class="meta-pill">🍳 {{ post.cook_time }}</span>{% endif %}
+                {% if post.difficulty %}<span class="meta-pill">⭐ {{ post.difficulty }}</span>{% endif %}
+              </div>
+            </div>
+            <button type="button" class="drawer-fav-star" data-slug="{{ post.slug }}" title="Marcar como favorita" aria-label="Favoritar {{ post.title }}">
+              ☆
+            </button>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- GRUPO 3: PRATOS PRINCIPAIS -->
+    <div class="drawer-group" data-cat="principais">
+      <div class="drawer-group-title">
+        <span class="group-title-label">Pratos Principais</span>
+        {% assign principais_posts = site.posts | where: "category", "Pratos Principais" | sort: "title" %}
+        <span class="group-count-badge">{{ principais_posts.size }}</span>
+      </div>
+      <div class="drawer-group-list">
+        {% for post in principais_posts %}
+          <a href="{{ post.url | relative_url }}" class="drawer-item{% if page.url == post.url %} is-current{% endif %}" data-slug="{{ post.slug }}" data-title="{{ post.title | downcase }}" data-cat="principais" data-tags="{% for t in post.tags %}{{ t | downcase | strip }} {% endfor %}" data-excerpt="{{ post.excerpt | strip_html | downcase }}">
+            <span class="drawer-item-bullet" aria-hidden="true">•</span>
+            <div class="drawer-item-body">
+              <span class="drawer-item-name">{{ post.title }}</span>
+              <div class="drawer-item-meta">
+                <span class="meta-pill">⏱️ {{ post.prep_time | default: "15 min" }}</span>
+                {% if post.cook_time %}<span class="meta-pill">🍳 {{ post.cook_time }}</span>{% endif %}
+                {% if post.difficulty %}<span class="meta-pill">⭐ {{ post.difficulty }}</span>{% endif %}
+              </div>
+            </div>
+            <button type="button" class="drawer-fav-star" data-slug="{{ post.slug }}" title="Marcar como favorita" aria-label="Favoritar {{ post.title }}">
+              ☆
+            </button>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- GRUPO 4: CAFÉ & MANHÃ -->
+    <div class="drawer-group" data-cat="cafe">
+      <div class="drawer-group-title">
+        <span class="group-title-label">Café &amp; Manhã</span>
+        {% assign cafe_posts = site.posts | where: "category", "Café & Manhã" | sort: "title" %}
+        <span class="group-count-badge">{{ cafe_posts.size }}</span>
+      </div>
+      <div class="drawer-group-list">
+        {% for post in cafe_posts %}
+          <a href="{{ post.url | relative_url }}" class="drawer-item{% if page.url == post.url %} is-current{% endif %}" data-slug="{{ post.slug }}" data-title="{{ post.title | downcase }}" data-cat="cafe" data-tags="{% for t in post.tags %}{{ t | downcase | strip }} {% endfor %}" data-excerpt="{{ post.excerpt | strip_html | downcase }}">
+            <span class="drawer-item-bullet" aria-hidden="true">•</span>
+            <div class="drawer-item-body">
+              <span class="drawer-item-name">{{ post.title }}</span>
+              <div class="drawer-item-meta">
+                <span class="meta-pill">⏱️ {{ post.prep_time | default: "15 min" }}</span>
+                {% if post.cook_time %}<span class="meta-pill">🍳 {{ post.cook_time }}</span>{% endif %}
+                {% if post.difficulty %}<span class="meta-pill">⭐ {{ post.difficulty }}</span>{% endif %}
+              </div>
+            </div>
+            <button type="button" class="drawer-fav-star" data-slug="{{ post.slug }}" title="Marcar como favorita" aria-label="Favoritar {{ post.title }}">
+              ☆
+            </button>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- MENSAGEM QUANDO NENHUMA RECEITA É ENCONTRADA -->
+    <div class="drawer-no-results" id="drawer-no-results" style="display: none;">
+      <span class="no-results-icon">🧺</span>
+      <p>Nenhuma receita encontrada com esse filtro</p>
+      <small>Tente buscar por ingrediente, palavra-chave ou outra categoria</small>
+    </div>
+
+  </div>
+
+  <!-- RODAPÉ DO ÍNDICE -->
+  <div class="drawer-footer">
+    <div class="drawer-footer-links">
+      <a href="{{ '/' | relative_url }}" class="drawer-footer-link">🏠 Início</a>
+      <a href="{{ '/conversor/' | relative_url }}" class="drawer-footer-link">⚖️ Conversor</a>
+    </div>
+    <span class="drawer-footer-tip">Dica: use <kbd>/</kbd> para buscar ou <kbd>Esc</kbd> para fechar</span>
+  </div>
+
+</aside>
+
+<!-- SCRIPT DO ÍNDICE DE RECEITAS -->
+<script>
+  (function() {
+    const drawer = document.getElementById('recipe-drawer');
+    const backdrop = document.getElementById('recipe-drawer-backdrop');
+    const toggleBtn = document.getElementById('recipe-index-toggle');
+    const closeBtn = document.getElementById('drawer-close-btn');
+    const searchInput = document.getElementById('drawer-search');
+    const pillsBar = document.getElementById('drawer-pills');
+    const favGroup = document.getElementById('drawer-fav-group');
+    const favList = document.getElementById('drawer-fav-list');
+    const favBadge = document.getElementById('drawer-fav-badge');
+    const pillFavCount = document.getElementById('pill-fav-count');
+    const noResults = document.getElementById('drawer-no-results');
+
+    const STORAGE_KEY = 'receitas_gui_favorites';
+
+    // Gerenciamento de Favoritos (LocalStorage)
+    function getFavorites() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveFavorites(favs) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
+      } catch (e) {}
+    }
+
+    function toggleFavorite(slug) {
+      if (!slug) return;
+      let favs = getFavorites();
+      const idx = favs.indexOf(slug);
+      if (idx > -1) {
+        favs.splice(idx, 1);
+      } else {
+        favs.push(slug);
+      }
+      saveFavorites(favs);
+      updateFavoritesUI();
+      filterDrawerRecipes();
+    }
+
+    function updateFavoritesUI() {
+      const favs = getFavorites();
+      const count = favs.length;
+
+      if (pillFavCount) pillFavCount.textContent = count;
+      if (favBadge) favBadge.textContent = count;
+
+      // Atualiza estrelas de todos os itens do drawer
+      const allStars = document.querySelectorAll('.drawer-fav-star');
+      allStars.forEach(star => {
+        const slug = star.getAttribute('data-slug');
+        const isFav = favs.includes(slug);
+        star.textContent = isFav ? '⭐' : '☆';
+        star.classList.toggle('is-fav', isFav);
+        star.title = isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
+      });
+
+      // Atualiza estrelas nos cards da página inicial se existirem
+      const cardStars = document.querySelectorAll('.card-fav-star');
+      cardStars.forEach(star => {
+        const slug = star.getAttribute('data-slug');
+        const isFav = favs.includes(slug);
+        star.textContent = isFav ? '⭐' : '☆';
+        star.classList.toggle('is-fav', isFav);
+      });
+
+      // Reconstrói a lista do grupo de favoritos no topo do menu
+      if (favList && favGroup) {
+        favList.innerHTML = '';
+        if (count === 0) {
+          favGroup.style.display = 'none';
+        } else {
+          favs.forEach(slug => {
+            const originalItem = drawer.querySelector(`.drawer-item[data-slug="${slug}"]`);
+            if (originalItem) {
+              const clone = originalItem.cloneNode(true);
+              clone.classList.add('is-fav-clone');
+              
+              // Reconecta o evento da estrela no clone
+              const cloneStar = clone.querySelector('.drawer-fav-star');
+              if (cloneStar) {
+                cloneStar.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleFavorite(slug);
+                });
+              }
+              favList.appendChild(clone);
+            }
+          });
+        }
+      }
+    }
+
+    // Controle de Abertura / Fechamento do Drawer
+    function openDrawer() {
+      if (!drawer) return;
+      drawer.classList.add('is-open');
+      if (backdrop) backdrop.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('drawer-open');
+      if (toggleBtn) toggleBtn.classList.add('is-active');
+
+      // Foca no input de busca com suave atraso para transição
+      setTimeout(() => {
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      }, 150);
+    }
+
+    function closeDrawer() {
+      if (!drawer) return;
+      drawer.classList.remove('is-open');
+      if (backdrop) backdrop.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('drawer-open');
+      if (toggleBtn) toggleBtn.classList.remove('is-active');
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (drawer && drawer.classList.contains('is-open')) {
+          closeDrawer();
+        } else {
+          openDrawer();
+        }
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeDrawer();
+      });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', closeDrawer);
+    }
+
+    // Atalhos globais de teclado
+    document.addEventListener('keydown', (e) => {
+      // Se pressionar ESC, fecha o drawer
+      if (e.key === 'Escape' && drawer && drawer.classList.contains('is-open')) {
+        closeDrawer();
+        return;
+      }
+
+      // Se pressionar '/' ou 'i' fora de campos editáveis, abre o drawer
+      const activeEl = document.activeElement;
+      const isInput = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable);
+      
+      if (!isInput && (e.key === '/' || e.key === 'i' || e.key === 'I')) {
+        e.preventDefault();
+        openDrawer();
+      }
+    });
+
+    // Filtros e Busca em Tempo Real
+    let activeCategory = 'all';
+
+    function filterDrawerRecipes() {
+      const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+      const favs = getFavorites();
+      let totalMatches = 0;
+
+      const groups = drawer.querySelectorAll('.drawer-group:not(.drawer-fav-group)');
+
+      // Visibilidade do grupo de favoritos no topo
+      if (favGroup) {
+        if (activeCategory === 'fav' || (activeCategory === 'all' && favs.length > 0 && !query)) {
+          favGroup.style.display = 'block';
+        } else {
+          favGroup.style.display = 'none';
+        }
+      }
+
+      groups.forEach(group => {
+        const cat = group.getAttribute('data-cat');
+        const items = group.querySelectorAll('.drawer-item');
+        let groupVisibleCount = 0;
+
+        // Se o filtro for 'fav', os grupos normais são ocultados
+        if (activeCategory === 'fav') {
+          group.style.display = 'none';
+          return;
+        }
+
+        // Se uma categoria específica estiver ativa e for diferente desta
+        if (activeCategory !== 'all' && activeCategory !== cat) {
+          group.style.display = 'none';
+          return;
+        }
+
+        items.forEach(item => {
+          const title = item.getAttribute('data-title') || '';
+          const tags = item.getAttribute('data-tags') || '';
+          const excerpt = item.getAttribute('data-excerpt') || '';
+
+          const matchesQuery = !query || title.includes(query) || tags.includes(query) || excerpt.includes(query);
+
+          if (matchesQuery) {
+            item.style.display = 'flex';
+            groupVisibleCount++;
+            totalMatches++;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+
+        // Se nenhum item do grupo deu match, oculta o grupo
+        group.style.display = (groupVisibleCount > 0) ? 'block' : 'none';
+      });
+
+      // No modo favoritas, conta os itens do favGroup
+      if (activeCategory === 'fav') {
+        const favItems = favGroup.querySelectorAll('.drawer-item');
+        let favVisibleCount = 0;
+        favItems.forEach(item => {
+          const title = item.getAttribute('data-title') || '';
+          const tags = item.getAttribute('data-tags') || '';
+          const matchesQuery = !query || title.includes(query) || tags.includes(query);
+          if (matchesQuery) {
+            item.style.display = 'flex';
+            favVisibleCount++;
+            totalMatches++;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      }
+
+      if (noResults) {
+        noResults.style.display = (totalMatches === 0) ? 'block' : 'none';
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', filterDrawerRecipes);
+    }
+
+    if (pillsBar) {
+      pillsBar.querySelectorAll('.drawer-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          pillsBar.querySelectorAll('.drawer-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeCategory = btn.getAttribute('data-cat') || 'all';
+          filterDrawerRecipes();
+        });
+      });
+    }
+
+    // Vincula cliques nas estrelas de favoritos originais
+    document.querySelectorAll('.drawer-fav-star').forEach(star => {
+      star.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const slug = star.getAttribute('data-slug');
+        toggleFavorite(slug);
+      });
+    });
+
+    // Inicialização da UI de favoritos e exposição global
+    updateFavoritesUI();
+    window.updateRecipeDrawerFavs = updateFavoritesUI;
+    window.openRecipeDrawer = openDrawer;
+    window.closeRecipeDrawer = closeDrawer;
+
+  })();
+</script>
